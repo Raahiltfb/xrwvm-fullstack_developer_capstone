@@ -1,7 +1,9 @@
 <html>
 <head>
-  <!-- Link the style sheet here -->
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/bootstrap.min.css">
 </head>
+<body>
 <div>
   <nav class="navbar navbar-expand-lg navbar-light" style="background-color:darkturquoise; height: 1in;">
     <div class="container-fluid">
@@ -25,44 +27,66 @@
     </div>
   </nav>
   
-    <div class="card" style="width: 80%;margin: auto; margin-top:5%;">
-      <div class="banner" name="about-header">
-      <!-- Insert header information here -->
-      </div>
-      <div style="display: flex;flex-direction: row; margin:auto">
-      <div class="card" style="width: 30%;">
-        <img class="card-img-top" src="/static/person.png" alt="Card image">
-        <div class="card-body">
-          <p class="title">Person1</p>
-          <p>Person1 Title</p>
-          <p class="card-text">Some text that explains the person1 in about 2 short sentences</p>
-          <p>person1@example.com</p>
-        </div>
-      </div>
+  <div class="card" style="width: 80%; margin: auto; margin-top: 5%;">
+    <div class="banner" name="about-header" style="padding: 20px;">
+      <h1>About Us</h1>
+      <p>Welcome to <strong>Best Cars Dealership</strong> — your trusted destination for high-quality new and pre-owned cars across North America. 
+      We pride ourselves on transparent pricing, personalized customer service, and an unmatched selection of vehicles from leading brands. 
+      Whether you're looking for a daily driver, luxury sedan, or electric innovation — we’ll help you drive away with confidence.</p>
+    </div>
 
-      <div class="card" style="width: 30%;">
-        <img class="card-img-top" src="/static/person.png" alt="Card image">
-        <div class="card-body">
-          <p class="title">Person2</p>
-          <p>Person2 Title</p>
-          <p class="card-text">Some text that explains the person2 in about 2 short sentences</p>
-          <p>person2@example.com</p>
-        </div>
-      </div>
+    <!-- Bootstrap grid ensures 3 cards stay in one row -->
+    <div class="container" style="margin-top: 20px; margin-bottom: 20px;">
+      <div class="row">
 
-      <div class="card" style="width: 30%;">
-        <img class="card-img-top" src="/static/person.png" alt="Card image">
-        <div class="card-body">
-          <p class="title">Person3</p>
-          <p>Person3 Title</p>
-          <p class="card-text">Some text that explains the person3 in about 2 short sentences</p>
-          <p>person3@example.com</p>
+        <div class="col-12 col-md-4">
+          <div class="card mb-3">
+            <img class="card-img-top img-fluid" src="/static/audrey_taylor.jpeg" alt="Audrey Taylor" 
+                 style="height: 250px; object-fit: cover; width: 100%;">
+            <div class="card-body">
+              <p class="title"><strong>Audrey Taylor</strong></p>
+              <p>Founder &amp; CEO</p>
+              <p class="card-text">With over 15 years in the automotive industry, Audrey founded Best Cars to make car buying transparent and enjoyable. 
+              Her passion for innovation and customer care drives everything we do.</p>
+              <p><a href="mailto:audrey.taylor@bestcars.com">audrey.taylor@bestcars.com</a></p>
+            </div>
+          </div>
         </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card mb-3">
+            <img class="card-img-top img-fluid" src="/static/jane_ramon.jpeg" alt="Jane Ramon"
+                 style="height: 250px; object-fit: cover; width: 100%;">
+            <div class="card-body">
+              <p class="title"><strong>Jane Ramon</strong></p>
+              <p>Head of Sales</p>
+              <p class="card-text">Jane leads our sales team with a commitment to honesty and excellence. 
+              She ensures every customer finds the perfect car to fit their lifestyle and budget.</p>
+              <p><a href="mailto:jane.ramon@bestcars.com">jane.ramon@bestcars.com</a></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card mb-3">
+            <img class="card-img-top img-fluid" src="/static/vanessa_sky.jpeg" alt="Vanessa Sky"
+                 style="height: 250px; object-fit: cover; width: 100%;">
+            <div class="card-body">
+              <p class="title"><strong>Vanessa Sky</strong></p>
+              <p>Customer Relations Manager</p>
+              <p class="card-text">Vanessa ensures every client’s experience with Best Cars is smooth and memorable. 
+              From first inquiry to post-purchase support, she’s the friendly face behind our exceptional service.</p>
+              <p><a href="mailto:vanessa.sky@bestcars.com">vanessa.sky@bestcars.com</a></p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-    </div>
-    </div>
-    
+
+  </div>
 </div>
 
+<script src="/static/bootstrap.bundle.min.js"></script>
+</body>
 </html>
