@@ -6,18 +6,25 @@ from . import views
 app_name = 'djangoapp'
 
 urlpatterns = [
-    # ✅ Corrected path for registration (frontend calls /djangoapp/register)
+    # ✅ Registration
     path(route='register', view=views.registration, name='register'),
 
-    # ✅ path for login
+    # ✅ Login
     path(route='login', view=views.login_user, name='login'),
 
-    # ✅ path for logout
+    # ✅ Logout
     path(route='logout', view=views.logout_request, name='logout'),
 
-    # path for dealer reviews view
-    # path(route='dealer/<int:dealer_id>/reviews', view=views.get_dealer_reviews, name='dealer_reviews'),
+    # ✅ Dealership routes
+    path(route='get_dealers', view=views.get_dealerships, name='get_dealers'),
+    path(route='get_dealers/<str:state>', view=views.get_dealerships, name='get_dealers_by_state'),
 
-    # path for add a review view
-    # path(route='add_review', view=views.add_review, name='add_review'),
+    # ✅ Dealer details
+    path(route='dealer/<int:dealer_id>', view=views.get_dealer_details, name='dealer_details'),
+
+    # ✅ Dealer reviews with sentiment
+    path(route='reviews/dealer/<int:dealer_id>', view=views.get_dealer_reviews, name='dealer_reviews'),
+
+    # ✅ Add review
+    path(route='add_review', view=views.add_review, name='add_review'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

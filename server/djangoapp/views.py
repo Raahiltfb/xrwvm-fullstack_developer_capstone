@@ -7,45 +7,39 @@ from datetime import datetime
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
-# from .populate import initiate
 
+# ✅ Import from restapis.py
+from .restapis import get_request, analyze_review_sentiments, post_review
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
-
-# ✅ Create a `login_request` view to handle sign in request
+# ✅ Login view
 @csrf_exempt
 def login_user(request):
-    # Get username and password from request body
     data = json.loads(request.body)
     username = data['userName']
     password = data['password']
-    # Try to check if provided credentials can be authenticated
     user = authenticate(username=username, password=password)
     data = {"userName": username}
     if user is not None:
-        # If user is valid, call login method to login current user
         login(request, user)
         data = {"userName": username, "status": "Authenticated"}
     return JsonResponse(data)
 
 
-# ✅ Create a `logout_request` view to handle sign out request
+# ✅ Logout view
 @csrf_exempt
 def logout_request(request):
-    logout(request)  # Terminate user session
-    data = {"userName": ""}  # Return empty username
+    logout(request)
+    data = {"userName": ""}
     return JsonResponse(data)
 
 
-# ✅ Create a `registration` view to handle sign up request
+# ✅ Registration view
 @csrf_exempt
 def registration(request):
-    context = {}
-    # Load JSON data from the request body
     data = json.loads(request.body)
     username = data['userName']
     password = data['password']
@@ -55,16 +49,12 @@ def registration(request):
 
     username_exist = False
     try:
-        # Check if user already exists
         User.objects.get(username=username)
         username_exist = True
     except User.DoesNotExist:
-        # If not, log this as a new user
         logger.debug(f"{username} is a new user")
 
-    # If it is a new user
     if not username_exist:
-        # Create user in auth_user table
         user = User.objects.create_user(
             username=username,
             first_name=first_name,
@@ -72,7 +62,6 @@ def registration(request):
             password=password,
             email=email
         )
-        # Login the user and return JSON response
         login(request, user)
         data = {"userName": username, "status": "Authenticated"}
         return JsonResponse(data)
@@ -81,15 +70,51 @@ def registration(request):
         return JsonResponse(data)
 
 
-# (Future stubs)
-# def get_dealerships(request):
-#     ...
+# ✅ Get all dealerships or by state
+def get_dealerships(request, state="All"):
+    if state == "All":
+        endpoint = "/fetchDealers"
+    else:
+        endpoint = "/fetchDealers/" + state
+    dealerships = get_request(endpoint)
+    return JsonResponse({"status": 200, "dealers": dealerships})
 
-# def get_dealer_reviews(request, dealer_id):
-#     ...
 
-# def get_dealer_details(request, dealer_id):
-#     ...
+# ✅ Get dealer details by ID
+def get_dealer_details(request, dealer_id):
+    if dealer_id:
+        endpoint = "/fetchDealer/" + str(dealer_id)
+        dealership = get_request(endpoint)
+        return JsonResponse({"status": 200, "dealer": dealership})
+    else:
+        return JsonResponse({"status": 400, "message": "Bad Request"})
 
-# def add_review(request):
-#     ...
+
+# ✅ Get dealer reviews and analyze sentiment
+def get_dealer_reviews(request, dealer_id):
+    if dealer_id:
+        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+        reviews = get_request(endpoint)
+        for review_detail in reviews:
+            response = analyze_review_sentiments(review_detail['review'])
+            print(response)
+            review_detail['sentiment'] = response['sentiment']
+        return JsonResponse({"status": 200, "reviews": reviews})
+    else:
+        return JsonResponse({"status": 400, "message": "Bad Request"})
+
+
+# ✅ Add review (authenticated only)
+@csrf_exempt
+def add_review(request):
+    if request.user.is_anonymous is False:
+        data = json.loads(request.body)
+        try:
+            response = post_review(data)
+            print(response)
+            return JsonResponse({"status": 200, "message": "Review posted successfully"})
+        except Exception as e:
+            print("Error in posting review:", e)
+            return JsonResponse({"status": 401, "message": "Error in posting review"})
+    else:
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
