@@ -19,21 +19,24 @@ const Dealer = () => {
   const params = useParams();
   const id = params.id;
 
-  // ✅ Hardcode BASE_URL for now (adjust port if Django runs on a different one)
-  const BASE_URL = "http://localhost:8000";
+  // ✅ Dynamically derive the root URL instead of hardcoding
+  let curr_url = window.location.href;
+  let root_url = curr_url.substring(0, curr_url.indexOf("dealer"));
+  let dealer_url = root_url + `djangoapp/dealer/${id}`;
+  let reviews_url = root_url + `djangoapp/reviews/dealer/${id}`;
+  let post_review = root_url + `postreview/${id}`;
 
-  const dealer_url = `${BASE_URL}/djangoapp/dealer/${id}`;
-  const reviews_url = `${BASE_URL}/djangoapp/reviews/dealer/${id}`;
-  const post_review = `${BASE_URL}/postreview/${id}`;
-
+  // ✅ Improved dealer fetch logic
   const get_dealer = async () => {
     try {
       const res = await fetch(dealer_url);
       const retobj = await res.json();
 
       if (retobj.status === 200 && retobj.dealer) {
-        const dealerobjs = Array.from(retobj.dealer);
-        setDealer(dealerobjs[0]);
+        const dealerData = Array.isArray(retobj.dealer)
+          ? retobj.dealer[0]
+          : retobj.dealer;
+        setDealer(dealerData);
       } else {
         console.error("Dealer fetch failed:", retobj);
       }
@@ -42,13 +45,14 @@ const Dealer = () => {
     }
   };
 
+  // ✅ Reviews fetch logic
   const get_reviews = async () => {
     try {
       const res = await fetch(reviews_url);
       const retobj = await res.json();
 
       if (retobj.status === 200) {
-        if (retobj.reviews.length > 0) {
+        if (retobj.reviews && retobj.reviews.length > 0) {
           setReviews(retobj.reviews);
         } else {
           setUnreviewed(true);
