@@ -8,14 +8,15 @@ import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
 
-# ✅ Import from restapis.py
+# Import from restapis.py
 from .restapis import get_request, analyze_review_sentiments, post_review
+from .models import CarMake, CarModel
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
-# ✅ Login view
+# Login view
 @csrf_exempt
 def login_user(request):
     data = json.loads(request.body)
@@ -29,7 +30,7 @@ def login_user(request):
     return JsonResponse(data)
 
 
-# ✅ Logout view
+# Logout view
 @csrf_exempt
 def logout_request(request):
     logout(request)
@@ -37,7 +38,7 @@ def logout_request(request):
     return JsonResponse(data)
 
 
-# ✅ Registration view
+# Registration view
 @csrf_exempt
 def registration(request):
     data = json.loads(request.body)
@@ -70,7 +71,7 @@ def registration(request):
         return JsonResponse(data)
 
 
-# ✅ Get all dealerships or by state
+# Get all dealerships or by state
 def get_dealerships(request, state="All"):
     if state == "All":
         endpoint = "/fetchDealers"
@@ -80,7 +81,7 @@ def get_dealerships(request, state="All"):
     return JsonResponse({"status": 200, "dealers": dealerships})
 
 
-# ✅ Get dealer details by ID
+# Get dealer details by ID
 def get_dealer_details(request, dealer_id):
     if dealer_id:
         endpoint = "/fetchDealer/" + str(dealer_id)
@@ -90,31 +91,49 @@ def get_dealer_details(request, dealer_id):
         return JsonResponse({"status": 400, "message": "Bad Request"})
 
 
-# ✅ Get dealer reviews and analyze sentiment
+# Get dealer reviews and analyze sentiment
 def get_dealer_reviews(request, dealer_id):
     if dealer_id:
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
         reviews = get_request(endpoint)
         for review_detail in reviews:
             response = analyze_review_sentiments(review_detail['review'])
-            print(response)
             review_detail['sentiment'] = response['sentiment']
         return JsonResponse({"status": 200, "reviews": reviews})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
 
 
-# ✅ Add review (authenticated only)
+# Add review (authenticated only)
 @csrf_exempt
 def add_review(request):
     if request.user.is_anonymous is False:
         data = json.loads(request.body)
         try:
             response = post_review(data)
-            print(response)
             return JsonResponse({"status": 200, "message": "Review posted successfully"})
         except Exception as e:
             print("Error in posting review:", e)
             return JsonResponse({"status": 401, "message": "Error in posting review"})
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
+
+
+# Get all cars (CarMake + CarModel)
+def get_cars(request):
+    try:
+        cars = CarModel.objects.select_related('make').all()
+        cars_list = [
+            {
+                "make": car.make.name,
+                "model": car.name,
+                "type": car.type,
+                "year": car.year,
+                "description": car.make.description
+            }
+            for car in cars
+        ]
+        return JsonResponse({"status": 200, "cars": cars_list})
+    except Exception as e:
+        logger.error(f"Error fetching cars: {e}")
+        return JsonResponse({"status": 500, "message": "Error fetching cars"})
