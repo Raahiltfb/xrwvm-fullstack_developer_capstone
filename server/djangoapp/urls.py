@@ -30,4 +30,7 @@ urlpatterns = [
 
     # Get cars
     path(route='get_cars', view=views.get_cars, name='get_cars'),
+
+    # Post review page
+    path(route='postreview/<int:dealer_id>', view=views.get_dealer_details, name='post_review'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
