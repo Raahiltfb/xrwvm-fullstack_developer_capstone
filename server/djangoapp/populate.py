@@ -1,26 +1,47 @@
-from django.utils.timezone import now
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError
 from .models import CarMake, CarModel
 
+
 def initiate():
+    """Populate the database with sample car makes and models."""
     try:
         # Clear existing data to avoid duplication
         CarModel.objects.all().delete()
         CarMake.objects.all().delete()
 
         # Create Car Makes
-        make1 = CarMake.objects.create(name="Toyota", description="Reliable and efficient Japanese car manufacturer")
-        make2 = CarMake.objects.create(name="Ford", description="American brand known for trucks and muscle cars")
-        make3 = CarMake.objects.create(name="BMW", description="Luxury German automaker known for performance")
+        make1 = CarMake.objects.create(
+            name="Toyota",
+            description="Reliable and efficient Japanese car manufacturer",
+        )
+        make2 = CarMake.objects.create(
+            name="Ford",
+            description="American brand known for trucks and muscle cars",
+        )
+        make3 = CarMake.objects.create(
+            name="BMW",
+            description="Luxury German automaker known for performance",
+        )
 
-        # Create Car Models
-        CarModel.objects.create(make=make1, name="Corolla", type="Sedan", year=2020)
-        CarModel.objects.create(make=make1, name="RAV4", type="SUV", year=2022)
-        CarModel.objects.create(make=make2, name="Mustang", type="Sedan", year=2021)
-        CarModel.objects.create(make=make2, name="F-150", type="SUV", year=2023)
-        CarModel.objects.create(make=make3, name="X5", type="SUV", year=2022)
-        CarModel.objects.create(make=make3, name="3 Series", type="Sedan", year=2019)
+        # Create Car Models (use car_make=, not make=)
+        CarModel.objects.create(
+            car_make=make1, name="Corolla", type="Sedan", year=2020
+        )
+        CarModel.objects.create(
+            car_make=make1, name="RAV4", type="SUV", year=2022
+        )
+        CarModel.objects.create(
+            car_make=make2, name="Mustang", type="Sedan", year=2021
+        )
+        CarModel.objects.create(
+            car_make=make2, name="F-150", type="Truck", year=2023
+        )
+        CarModel.objects.create(
+            car_make=make3, name="X5", type="SUV", year=2022
+        )
+        CarModel.objects.create(
+            car_make=make3, name="3 Series", type="Sedan", year=2019
+        )
 
         print("Database populated successfully!")
 
