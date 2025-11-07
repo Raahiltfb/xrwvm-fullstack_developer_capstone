@@ -123,19 +123,20 @@ def add_review(request):
 
 # Get all cars (CarMake + CarModel)
 def get_cars(request):
-    try:
-        cars = CarModel.objects.select_related('make').all()
-        cars_list = [
-            {
-                "make": car.make.name,
-                "model": car.name,
-                "type": car.type,
-                "year": car.year,
-                "description": car.make.description
-            }
-            for car in cars
-        ]
-        return JsonResponse({"status": 200, "cars": cars_list})
-    except Exception as e:
-        logger.error(f"Error fetching cars: {e}")
-        return JsonResponse({"status": 500, "message": "Error fetching cars"})
+    """Retrieve available car makes and models."""
+    if CarMake.objects.count() == 0 or CarModel.objects.count() == 0:
+        from .populate import initiate
+        initiate()
+
+    car_models = CarModel.objects.select_related("car_make")
+    cars = [
+        {
+            "CarModel": car_model.name,
+            "CarMake": car_model.car_make.name,
+            "Type": car_model.type,
+            "Year": car_model.year,
+            "Description": car_model.car_make.description
+        }
+        for car_model in car_models
+    ]
+    return JsonResponse({"CarModels": cars})
